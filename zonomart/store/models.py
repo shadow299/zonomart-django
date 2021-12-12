@@ -1,4 +1,5 @@
 from django.db import models
+from django.db.models.aggregates import Avg, Count
 from django.db.models.base import Model
 from category.models import Category
 from django.urls import reverse
@@ -23,6 +24,20 @@ class Product(models.Model):
 
     def __str__(self):
         return self.product_name
+
+    def averageReview(self):
+        reviews = ReviewRating.objects.filter(product=self, status= True).aggregate(average=Avg('rating'))
+        avg = 0
+        if reviews['average'] is not None:
+            avg = float(reviews['average'])
+        return avg
+
+    def countReview(self):
+        reviews = ReviewRating.objects.filter(product=self, status= True).aggregate(count=Count('id'))
+        count = 0
+        if reviews['count'] is not None:
+            count = int(reviews['count'])
+        return count
 
 
 variation_category_coice = (
